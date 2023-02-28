@@ -50,54 +50,59 @@ class Detector:
         plt.plot(self.__X, self.__Y, marker='.', color='k', linestyle='none')
         plt.show()
 
-    def display_normal(self):
+    def display_normal(self, wireframe=False):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         x = self.__X
         y = self.__Y
         z = self.__Z
         ax.plot_surface(x, y, z)
-        # ax.plot_wireframe(x,y,z)
 
         plt.show()
 
-    def display_dist(self):
+    def display_dist(self, wireframe=False):
+        distrib = self.distribution_function
         fig = plt.figure()
-
         ax = fig.add_subplot(projection='3d')
-
         x = self.__X
         y = self.__Y
         z = self.__Z
-
-        ax.scatter(x, y, z)
+        if (distrib == "Normal"):
+            if self.num_points <= 1000:
+                ax.scatter(x, y, z)
+            else:
+                if wireframe:
+                    ax.plot_wireframe(x, y, z)
+                ax.plot_surface(x, y, z)
+        else:
+            ax.scatter(x, y, z)
         plt.show()
 
     def print_properties(self):
         print(
             "Size: {size}cm\nArea: {area}cm²\nNum pts: {num_points}\nPt. spacing: ~{point_spacing:.3f}cm\nPt. Distrib: {point_distribution}".format(size=self.size, area=self.area, num_points=self.num_points, point_spacing=self.point_spacing, point_distribution=self.distribution_function))
 
-    def generate_random(self):
+    def generate_random(self, low=0, high=10):
         self.distribution_function = "Random"
-        a = self.grid
-        self.__Z = np.random.randn(a.shape[0])
+        grid = self.grid
+        self.__Z = np.random.uniform(low=low, high=high, size=grid.shape[0])
 
-    def generate_normal(self):
+    def generate_normal(self, mu=[0.0, 0.0], sigma=[3, 3], scale=1):
         self.distribution_function = "Normal"
-        # TODO: implement normal dist gen
-        a = self.grid
+        grid = self.grid
         x = self.__X
-        mu = np.array([0.0, 0.0])
+        mu = np.array(mu)
 
-        sigma = np.array([3, 3])
+        sigma = np.array(sigma)
         covariance = np.diag(sigma**2)
 
-        z = multivariate_normal.pdf(a, mean=mu, cov=covariance)
+        z = multivariate_normal.pdf(grid, mean=mu, cov=covariance)
         z = z.reshape(x.shape)
+        z *= scale
         self.__Z = z
 
 
-detector = Detector(20, 1000)
+detector = Detector(100, 10000)
 detector.generate_grid()
-detector.generate_normal()
-detector.display_normal()
+detector.generate_normal(scale=1000, mu=[-10, -10], sigma=[10, 10])
+detector.display_dist()
