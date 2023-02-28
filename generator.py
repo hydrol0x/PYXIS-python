@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import math
 import warnings
 
+from mpl_toolkits.mplot3d import Axes3D
+from scipy.stats import multivariate_normal
+
 
 def is_square(i: int) -> bool:
     return i == math.isqrt(i) ** 2
@@ -47,6 +50,17 @@ class Detector:
         plt.plot(self.__X, self.__Y, marker='.', color='k', linestyle='none')
         plt.show()
 
+    def display_normal(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        x = self.__X
+        y = self.__Y
+        z = self.__Z
+        ax.plot_surface(x, y, z)
+        # ax.plot_wireframe(x,y,z)
+
+        plt.show()
+
     def display_dist(self):
         fig = plt.figure()
 
@@ -71,9 +85,19 @@ class Detector:
     def generate_normal(self):
         self.distribution_function = "Normal"
         # TODO: implement normal dist gen
+        a = self.grid
+        x = self.__X
+        mu = np.array([0.0, 0.0])
+
+        sigma = np.array([3, 3])
+        covariance = np.diag(sigma**2)
+
+        z = multivariate_normal.pdf(a, mean=mu, cov=covariance)
+        z = z.reshape(x.shape)
+        self.__Z = z
 
 
-detector = Detector(20, 100)
+detector = Detector(20, 1000)
 detector.generate_grid()
-detector.generate_random()
-detector.display_dist()
+detector.generate_normal()
+detector.display_normal()
