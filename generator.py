@@ -1,10 +1,16 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import math
 import warnings
 
 
 def is_square(i: int) -> bool:
     return i == math.isqrt(i) ** 2
+
+
+def generate_grid(size, per_side):
+    return (np.mgrid[-size/2:size /
+                     2:complex(per_side, 1), -size/2:size/2:complex(per_side, 1)])
 
 
 def runtime_warn(message):
@@ -16,13 +22,25 @@ class Detector:
         if (not is_square(num_points)):
             runtime_warn(
                 "numPoints not square; results rounded to square number")
-        per_side = int(num_points**.5)
+        self.per_side = int(num_points**.5)
         self.size = size
         self.area = size**2
         self.num_points = num_points
-        self.point_spacing = per_side / size
-        self.points = np.zeros((per_side, per_side))
+        self.point_spacing = self.per_side / self.size
         self.distribution_function = None
+
+    def generate_grid(self):
+        # Generate a grid from -size/2 to size/2
+        size = self.size
+        per_side = self.per_side
+        _X, _Y = np.mgrid[-size/2:size /
+                          2:complex(self.per_side, 1), -self.size/2:self.size/2:complex(self.per_side, 1)]
+        self.grid = np.vstack((_X.flatten(), _Y.flatten())).T
+        self._X, self._Y = _X, _Y
+
+    def display_grid(self):
+        plt.plot(self._X, self._Y, marker='.', color='k', linestyle='none')
+        plt.show()
 
     def print_properties(self):
         print(
@@ -37,6 +55,6 @@ class Detector:
         # TODO: implement normal dist gen
 
 
-detector = Detector(11, 100)
-detector.generate_normal()
-detector.print_properties()
+detector = Detector(20, 1000)
+detector.generate_grid()
+detector.display_grid()
