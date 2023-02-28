@@ -50,16 +50,6 @@ class Detector:
         plt.plot(self.__X, self.__Y, marker='.', color='k', linestyle='none')
         plt.show()
 
-    def display_normal(self, wireframe=False):
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        x = self.__X
-        y = self.__Y
-        z = self.__Z
-        ax.plot_surface(x, y, z)
-
-        plt.show()
-
     def display_dist(self, wireframe=False):
         distrib = self.distribution_function
         fig = plt.figure()
@@ -102,7 +92,8 @@ class Detector:
         self.__Z = z
 
 
-detector = Detector(100, 10000)
+detector = Detector(100, 100)
 detector.generate_grid()
-detector.generate_normal(scale=1000, mu=[-10, -10], sigma=[10, 10])
+# detector.generate_normal(scale=1000, mu=[-10, -10], sigma=[10, 10])
+detector.generate_random()
 detector.display_dist()
