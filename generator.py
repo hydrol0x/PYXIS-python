@@ -87,8 +87,9 @@ class Detector:
         self.__Z = z
 
 
-detector = Detector(100, 100)
-detector.generate_grid()
-# detector.generate_normal(scale=1000, mu=[-10, -10], sigma=[10, 10])
-detector.generate_random()
-detector.display_dist()
+if __name__ == "__main__":
+    detector = Detector(100, 100)
+    detector.generate_grid()
+    # detector.generate_normal(scale=1000, mu=[-10, -10], sigma=[10, 10])
+    detector.generate_random()
+    detector.display_dist()
