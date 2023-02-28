@@ -17,6 +17,11 @@ def runtime_warn(message):
     warnings.warn(message, RuntimeWarning, stacklevel=2)
 
 
+def xyzval(A):
+    x, y, z = np.indices(A.shape)
+    return x.ravel(), y.ravel(), z.ravel()
+
+
 class Detector:
     def __init__(self, size, num_points):
         if (not is_square(num_points)):
@@ -33,13 +38,25 @@ class Detector:
         # Generate a grid from -size/2 to size/2
         size = self.size
         per_side = self.per_side
-        _X, _Y = np.mgrid[-size/2:size /
-                          2:complex(self.per_side, 1), -self.size/2:self.size/2:complex(self.per_side, 1)]
-        self.grid = np.vstack((_X.flatten(), _Y.flatten())).T
-        self._X, self._Y = _X, _Y
+        __X, __Y = np.mgrid[-size/2:size /
+                            2:complex(self.per_side, 1), -self.size/2:self.size/2:complex(self.per_side, 1)]
+        self.grid = np.vstack((__X.flatten(), __Y.flatten())).T
+        self.__X, self.__Y = __X, __Y
 
     def display_grid(self):
-        plt.plot(self._X, self._Y, marker='.', color='k', linestyle='none')
+        plt.plot(self.__X, self.__Y, marker='.', color='k', linestyle='none')
+        plt.show()
+
+    def display_dist(self):
+        fig = plt.figure()
+
+        ax = fig.add_subplot(projection='3d')
+
+        x = self.__X
+        y = self.__Y
+        z = self.__Z
+
+        ax.scatter(x, y, z)
         plt.show()
 
     def print_properties(self):
@@ -48,7 +65,8 @@ class Detector:
 
     def generate_random(self):
         self.distribution_function = "Random"
-        # TODO: implement random dist
+        a = self.grid
+        self.__Z = np.random.randn(a.shape[0])
 
     def generate_normal(self):
         self.distribution_function = "Normal"
@@ -57,5 +75,5 @@ class Detector:
 
 detector = Detector(20, 100)
 detector.generate_grid()
-detector.print_properties()
-detector.display_grid()
+detector.generate_random()
+detector.display_dist()
