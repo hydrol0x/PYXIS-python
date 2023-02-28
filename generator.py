@@ -20,11 +20,6 @@ def runtime_warn(message):
     warnings.warn(message, RuntimeWarning, stacklevel=2)
 
 
-def xyzval(A):
-    x, y, z = np.indices(A.shape)
-    return x.ravel(), y.ravel(), z.ravel()
-
-
 class Detector:
     def __init__(self, size, num_points):
         if (not is_square(num_points)):
