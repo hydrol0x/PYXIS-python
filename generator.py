@@ -26,7 +26,7 @@ class Detector:
         self.size = size
         self.area = size**2
         self.num_points = num_points
-        self.point_spacing = self.per_side / self.size
+        self.point_spacing = self.size/(self.per_side - 1)
         self.distribution_function = None
 
     def generate_grid(self):
@@ -55,6 +55,7 @@ class Detector:
         # TODO: implement normal dist gen
 
 
-detector = Detector(20, 1000)
+detector = Detector(20, 100)
 detector.generate_grid()
+detector.print_properties()
 detector.display_grid()
