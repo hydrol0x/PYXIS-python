@@ -28,7 +28,7 @@ class Detector:
         self.per_side = int(num_points**.5)
         self.size = size
         self.area = size**2
-        self.num_points = num_points
+        self.num_points = int((num_points)**.5)**2
         self.point_spacing = self.size/(self.per_side - 1)
         self.distribution_function = None
 
@@ -49,10 +49,13 @@ class Detector:
         distrib = self.distribution_function
         fig = plt.figure()
         ax = fig.add_subplot(projection='3d')
+        plt.suptitle("Detector distribution")
         x = self.__X
         y = self.__Y
         z = self.__Z
         if (distrib == "Normal"):
+            plt.title(
+                f"size={self.per_side}x{self.per_side}, num pts. {self.num_points}, µ={self.__mu}, σ={self.__sigma}", fontsize=8)
             if self.num_points <= 1000:
                 ax.scatter(x, y, z)
             else:
@@ -74,6 +77,8 @@ class Detector:
 
     def generate_normal(self, mu=[0.0, 0.0], sigma=[3, 3], scale=1):
         self.distribution_function = "Normal"
+        self.__mu = mu
+        self.__sigma = sigma
         grid = self.grid
         x = self.__X
         mu = np.array(mu)
@@ -88,8 +93,7 @@ class Detector:
 
 
 if __name__ == "__main__":
-    detector = Detector(100, 100)
+    detector = Detector(10, 1000)
     detector.generate_grid()
-    # detector.generate_normal(scale=1000, mu=[-10, -10], sigma=[10, 10])
-    detector.generate_random()
+    detector.generate_normal(scale=100, mu=[0, 0], sigma=[1, 1])
     detector.display_dist()
