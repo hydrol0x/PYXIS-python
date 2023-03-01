@@ -50,20 +50,27 @@ class Detector:
         fig = plt.figure()
         ax = fig.add_subplot(projection='3d')
         plt.suptitle("Detector distribution")
+        ax.set_xlabel('x cm', fontsize=10)
+        ax.set_ylabel('y cm', fontsize=10)
+        ax.set_zlabel('Counts', fontsize=10)
         x = self.__X
         y = self.__Y
         z = self.__Z
+        title = f"{self.size}cm×{self.size}cm,  # pts. {self.num_points}, "
         if (distrib == "Normal"):
-            plt.title(
-                f"size={self.per_side}x{self.per_side}, num pts. {self.num_points}, µ={self.__mu}, σ={self.__sigma}", fontsize=8)
+            title += f"µ={self.__mu}, σ={self.__sigma}"
             if self.num_points <= 1000:
                 ax.scatter(x, y, z)
             else:
                 if wireframe:
                     ax.plot_wireframe(x, y, z)
                 ax.plot_surface(x, y, z)
+        elif distrib == "Random":
+            title += f"max={self.__random_high}, low={self.__random_low}"
+            ax.scatter(x, y, z)
         else:
             ax.scatter(x, y, z)
+        plt.title(title, fontsize=8)
         plt.show()
 
     def print_properties(self):
@@ -72,6 +79,8 @@ class Detector:
 
     def generate_random(self, low=0, high=10):
         self.distribution_function = "Random"
+        self.__random_low = low
+        self.__random_high = high
         grid = self.grid
         self.__Z = np.random.uniform(low=low, high=high, size=grid.shape[0])
 
@@ -93,7 +102,7 @@ class Detector:
 
 
 if __name__ == "__main__":
-    detector = Detector(10, 1000)
+    detector = Detector(20, 1000)
     detector.generate_grid()
-    detector.generate_normal(scale=100, mu=[0, 0], sigma=[1, 1])
+    detector.generate_random()
     detector.display_dist()
