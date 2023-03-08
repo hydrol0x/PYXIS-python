@@ -16,17 +16,24 @@ def generate_grid(size, per_side):
                      2:complex(per_side, 1), -size/2:size/2:complex(per_side, 1)])
 
 
-def grid_from_axes(x_axis, y_axis):
+# def grid_from_axes(x_axis, y_axis):
 
-    grid = []
+#     grid = []
 
-    for i, col in enumerate(y_axis):
-        yVal = col[i]
-        for j, row in enumerate(x_axis):
-            xVal = row[j]
-            grid.append((xVal, yVal))
-    grid = np.array(grid, dtype=('float64', (2, 2)))
-    return grid
+#     for i, col in enumerate(y_axis):
+#         yVal = col[i]
+#         for j, row in enumerate(x_axis):
+#             xVal = row[j]
+#             grid.append((xVal, yVal))
+#     grid = np.array(grid, dtype=('float64', (2, 2)))
+#     return grid
+
+def coordinates_from_axes(xx, yy, zz):
+    output = []
+    for x, y, z in zip(xx, yy, zz):
+        for i in range(len(x)):
+            output.append((x[i], y[i], z[i]))
+    return output
 
 
 def runtime_warn(message):
@@ -101,10 +108,10 @@ class Detector:
         # self.distribution = np.vstack(np.meshgrid(x, y, z)).reshape(3, -1).T
         # self.distribution = coords_from_axex(x, y, z)
         # self.distribution = np.stack((x, y, z))
-        print(x.shape)
-        print(y.shape)
-        z = z.reshape(2, 2)
-        self.distribution = np.stack((x, y, z))
+        # z = z.reshape(2, 2)
+        print(z)
+        # self.distribution = np.stack((x, y, z))
+        # self.distribution = coordinates_from_axes(x, y, z)
 
     def generate_normal(self, mu=[0.0, 0.0], sigma=[3, 3], scale=1):
         self.distribution_function = "Normal"
@@ -121,30 +128,14 @@ class Detector:
         z = z.reshape(x.shape)
         z *= scale
         self.__Z = z
-        # grid = np.reshape(grid_from_axes(x, y), (2, 2, 2))
-        # .reshape(2, 4)
-        # print(grid)
-        # print(x)
-        self.distribution = np.stack((x, y, z))
-
-    def printz(self):
-        print(self.__Z)
-
-    def print_distribution(self):
-        xx, yy, zz = self.__X, self.__Y, self.__Z
-        print(xx)
-        print(yy)
-        print(zz)
-        for x, y, z in zip(xx, yy, zz):
-            for i in range(len(x)):
-                print((x[i], y[i], z[i]))
+        # self.distribution = np.stack((x, y, z))
+        self.distribution = coordinates_from_axes(x, y, z)
 
 
 if __name__ == "__main__":
     detector = Detector(10, 10)
     detector.generate_grid()
-    detector.generate_normal(scale=1000)
-    # detector.printz()
+    # detector.generate_normal(scale=1000)
+    detector.generate_random()
     # print(detector.distribution)
-    # detector.display_dist()
-    detector.print_distribution()
+    detector.display_dist()
