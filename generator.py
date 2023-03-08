@@ -108,10 +108,9 @@ class Detector:
         # self.distribution = np.vstack(np.meshgrid(x, y, z)).reshape(3, -1).T
         # self.distribution = coords_from_axex(x, y, z)
         # self.distribution = np.stack((x, y, z))
-        # z = z.reshape(2, 2)
-        print(z)
+        z = z.reshape(x.shape)
         # self.distribution = np.stack((x, y, z))
-        # self.distribution = coordinates_from_axes(x, y, z)
+        self.distribution = coordinates_from_axes(x, y, z)
 
     def generate_normal(self, mu=[0.0, 0.0], sigma=[3, 3], scale=1):
         self.distribution_function = "Normal"
@@ -137,5 +136,5 @@ if __name__ == "__main__":
     detector.generate_grid()
     # detector.generate_normal(scale=1000)
     detector.generate_random()
-    # print(detector.distribution)
+    print(detector.distribution)
     detector.display_dist()
