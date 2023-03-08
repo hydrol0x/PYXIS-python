@@ -16,6 +16,19 @@ def generate_grid(size, per_side):
                      2:complex(per_side, 1), -size/2:size/2:complex(per_side, 1)])
 
 
+def grid_from_axes(x_axis, y_axis):
+
+    grid = []
+
+    for i, col in enumerate(y_axis):
+        yVal = col[i]
+        for j, row in enumerate(x_axis):
+            xVal = row[j]
+            grid.append((xVal, yVal))
+    grid = np.array(grid, dtype=('float64', (2, 2)))
+    return grid
+
+
 def runtime_warn(message):
     warnings.warn(message, RuntimeWarning, stacklevel=2)
 
@@ -37,7 +50,7 @@ class Detector:
         size = self.size
         per_side = self.per_side
         __X, __Y = np.mgrid[-size/2:size /
-                            2:complex(self.per_side, 1), -self.size/2:self.size/2:complex(self.per_side, 1)]
+                            2: complex(self.per_side, 1), -self.size/2: self.size/2: complex(self.per_side, 1)]
         self.grid = np.vstack((__X.flatten(), __Y.flatten())).T
         self.__X, self.__Y = __X, __Y
 
@@ -82,7 +95,16 @@ class Detector:
         self.__random_low = low
         self.__random_high = high
         grid = self.grid
-        self.__Z = np.random.uniform(low=low, high=high, size=grid.shape[0])
+        z = np.random.uniform(low=low, high=high, size=grid.shape[0])
+        x, y = self.__X, self.__Y
+        self.__Z = z
+        # self.distribution = np.vstack(np.meshgrid(x, y, z)).reshape(3, -1).T
+        # self.distribution = coords_from_axex(x, y, z)
+        # self.distribution = np.stack((x, y, z))
+        print(x.shape)
+        print(y.shape)
+        z = z.reshape(2, 2)
+        self.distribution = np.stack((x, y, z))
 
     def generate_normal(self, mu=[0.0, 0.0], sigma=[3, 3], scale=1):
         self.distribution_function = "Normal"
@@ -94,15 +116,35 @@ class Detector:
 
         sigma = np.array(sigma)
         covariance = np.diag(sigma**2)
-
+        x, y = self.__X, self.__Y
         z = multivariate_normal.pdf(grid, mean=mu, cov=covariance)
         z = z.reshape(x.shape)
         z *= scale
         self.__Z = z
+        # grid = np.reshape(grid_from_axes(x, y), (2, 2, 2))
+        # .reshape(2, 4)
+        # print(grid)
+        # print(x)
+        self.distribution = np.stack((x, y, z))
+
+    def printz(self):
+        print(self.__Z)
+
+    def print_distribution(self):
+        xx, yy, zz = self.__X, self.__Y, self.__Z
+        print(xx)
+        print(yy)
+        print(zz)
+        for x, y, z in zip(xx, yy, zz):
+            for i in range(len(x)):
+                print((x[i], y[i], z[i]))
 
 
 if __name__ == "__main__":
-    detector = Detector(20, 1000)
+    detector = Detector(10, 10)
     detector.generate_grid()
-    detector.generate_random()
-    detector.display_dist()
+    detector.generate_normal(scale=1000)
+    # detector.printz()
+    # print(detector.distribution)
+    # detector.display_dist()
+    detector.print_distribution()
