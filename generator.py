@@ -5,6 +5,7 @@ from scipy.stats import multivariate_normal
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import math
+import csv
 
 # TODO: add docstrings to future methods or functions
 
@@ -164,6 +165,15 @@ class Detector:
         print(
             "Size: {size}cm\nArea: {area}cm²\nNum pts: {num_points}\nPt. spacing: ~{point_spacing:.3f}cm\nPt. Distrib: {point_distribution}".format(size=self.size, area=self.area, num_points=self.num_points, point_spacing=self.point_spacing, point_distribution=self.distribution_function))
 
+    def output_distribution(self, filename="distribution"):
+        # TODO: maybe change format of output
+        # Writing to file
+        with open(f"{filename}.csv", "w", newline='') as outfile:
+            # Writing data to a file
+            writer = csv.writer(outfile, dialect='excel', delimiter=',')
+            for coordinate in self.distribution:
+                writer.writerow(coordinate)
+
 
 if __name__ == "__main__":
     # Initiate each Detector
@@ -185,5 +195,8 @@ if __name__ == "__main__":
 
     print("Normal dist. points: ")
     print(detector_norm.distribution)
+    detector_norm.output_distribution("normal_distribution")
+
     print("\n Random dist. points")
     print(detector_rand.distribution)
+    detector_rand.output_distribution("random_distribution")
