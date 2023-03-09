@@ -39,6 +39,9 @@ detector.display_dist()
 
 The `generate_normal` method generates a normal distribution of points on the grid, with the specified mean `mu`, standard deviation `sigma`, and scaling factor `scale`. The `generate_random` method generates a random distribution of points with a minimum of ` low` and maximum of `high`.
 
+### Outputing distribution
+Use `Detector.output_distribution(filename=file_name)` to write distribution data to `file_name.csv`  
+
 ### Example output
 `Detector.distribution` is a list of coordinate points from the grid as well as the coresponding z-value from the generated distribution
 ```
