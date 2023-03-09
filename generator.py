@@ -106,7 +106,7 @@ class Detector:
                     ax.plot_wireframe(x, y, z)
                 ax.plot_surface(x, y, z)
         elif distrib == "Random":
-            title += f"max={self.__random_high}, low={self.__random_low}"
+            title += f"max={self.__random_high}, min={self.__random_low}"
             ax.scatter(x, y, z)
         else:
             ax.scatter(x, y, z)
