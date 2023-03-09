@@ -1,32 +1,21 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import math
+# TODO: add error checking (maybe use @decorator to try except)
 import warnings
-
-from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
 from scipy.stats import multivariate_normal
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import math
 
 
 def is_square(i: int) -> bool:
     return i == math.isqrt(i) ** 2
 
 
-def generate_grid(size, per_side):
+def generate_grid(size: int, per_side: int):
+    # Generates an interval of points that is evenly spaced (numpy uses complex num. to accomplish)
     return (np.mgrid[-size/2:size /
                      2:complex(per_side, 1), -size/2:size/2:complex(per_side, 1)])
 
-
-# def grid_from_axes(x_axis, y_axis):
-
-#     grid = []
-
-#     for i, col in enumerate(y_axis):
-#         yVal = col[i]
-#         for j, row in enumerate(x_axis):
-#             xVal = row[j]
-#             grid.append((xVal, yVal))
-#     grid = np.array(grid, dtype=('float64', (2, 2)))
-#     return grid
 
 def coordinates_from_axes(xx, yy, zz):
     output = []
@@ -41,7 +30,7 @@ def runtime_warn(message):
 
 
 class Detector:
-    def __init__(self, size, num_points):
+    def __init__(self, size: int, num_points: int):
         if (not is_square(num_points)):
             runtime_warn(
                 "numPoints not square; results rounded to square number")
@@ -93,23 +82,16 @@ class Detector:
         plt.title(title, fontsize=8)
         plt.show()
 
-    def print_properties(self):
-        print(
-            "Size: {size}cm\nArea: {area}cm²\nNum pts: {num_points}\nPt. spacing: ~{point_spacing:.3f}cm\nPt. Distrib: {point_distribution}".format(size=self.size, area=self.area, num_points=self.num_points, point_spacing=self.point_spacing, point_distribution=self.distribution_function))
-
     def generate_random(self, low=0, high=10):
         self.distribution_function = "Random"
         self.__random_low = low
         self.__random_high = high
         grid = self.grid
-        z = np.random.uniform(low=low, high=high, size=grid.shape[0])
+
         x, y = self.__X, self.__Y
+        z = np.random.uniform(low=low, high=high,
+                              size=grid.shape[0]).reshape(x.shape)
         self.__Z = z
-        # self.distribution = np.vstack(np.meshgrid(x, y, z)).reshape(3, -1).T
-        # self.distribution = coords_from_axex(x, y, z)
-        # self.distribution = np.stack((x, y, z))
-        z = z.reshape(x.shape)
-        # self.distribution = np.stack((x, y, z))
         self.distribution = coordinates_from_axes(x, y, z)
 
     def generate_normal(self, mu=[0.0, 0.0], sigma=[3, 3], scale=1):
@@ -117,24 +99,44 @@ class Detector:
         self.__mu = mu
         self.__sigma = sigma
         grid = self.grid
-        x = self.__X
-        mu = np.array(mu)
 
+        mu = np.array(mu)
         sigma = np.array(sigma)
         covariance = np.diag(sigma**2)
+
         x, y = self.__X, self.__Y
-        z = multivariate_normal.pdf(grid, mean=mu, cov=covariance)
-        z = z.reshape(x.shape)
+        z = multivariate_normal.pdf(
+            grid, mean=mu, cov=covariance).reshape(x.shape)
+        # Normal gaussian dist. has an area under curve of 1, so all the values will be low
+        # Group focusing on math can determine how to scale graph
         z *= scale
         self.__Z = z
-        # self.distribution = np.stack((x, y, z))
         self.distribution = coordinates_from_axes(x, y, z)
+
+    def print_properties(self):
+        print(
+            "Size: {size}cm\nArea: {area}cm²\nNum pts: {num_points}\nPt. spacing: ~{point_spacing:.3f}cm\nPt. Distrib: {point_distribution}".format(size=self.size, area=self.area, num_points=self.num_points, point_spacing=self.point_spacing, point_distribution=self.distribution_function))
 
 
 if __name__ == "__main__":
-    detector = Detector(10, 10)
-    detector.generate_grid()
-    # detector.generate_normal(scale=1000)
-    detector.generate_random()
-    print(detector.distribution)
-    detector.display_dist()
+    # Initiate each Detector
+    detector_norm = Detector(10, 1000)
+    detector_rand = Detector(10, 1000)
+
+    # Generate the grid for detectors (in future this might be done on init, will see)
+    detector_norm.generate_grid()
+    detector_rand.generate_grid()
+
+    # generate respective distribution (and distribution coordinates)
+    detector_norm.generate_normal(mu=[0.0, 0.0], sigma=[3, 3], scale=10000)
+    detector_rand.generate_random(low=0, high=1000)
+
+    # Display a graph of each dist
+    # (note: have to close out of one graph before next one displays)
+    detector_norm.display_dist()
+    detector_rand.display_dist()
+
+    print("Normal dist. points: ")
+    print(detector_norm.distribution)
+    print("\n Random dist. points")
+    print(detector_rand.distribution)
