@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import math
 
+# TODO: add docstrings to future methods or functions
+
 
 def is_square(i: int) -> bool:
     return i == math.isqrt(i) ** 2
@@ -13,11 +15,31 @@ def is_square(i: int) -> bool:
 
 def generate_grid(size: int, per_side: int):
     # Generates an interval of points that is evenly spaced (numpy uses complex num. to accomplish)
+    """Generate an interval of evenly spaced points to fill the detector
+
+    Args:
+        size (int): side length (cm) of detector
+        # TODO: consolidate per_side into this func, i.e calculate within this func
+        per_side (int): number of points per side
+
+    Returns:
+        np.array: numpy array
+    """
     return (np.mgrid[-size/2:size /
                      2:complex(per_side, 1), -size/2:size/2:complex(per_side, 1)])
 
 
 def coordinates_from_axes(xx, yy, zz):
+    """Generate coordinate pairs for each point on detector with the corresponding z-val from point distribution. Z represents counts.
+
+    Args:
+        xx np.array: numpy array from meshgrid
+        yy np.array: numpy array from meshgrid
+        zz np.array: numpy array from distribution generation
+
+    Returns:
+        list: List of coordinates
+    """
     output = []
     for x, y, z in zip(xx, yy, zz):
         for i in range(len(x)):
@@ -42,6 +64,8 @@ class Detector:
         self.distribution_function = None
 
     def generate_grid(self):
+        """Generate the detector grid of coordinate points
+        """
         # Generate a grid from -size/2 to size/2
         size = self.size
         per_side = self.per_side
@@ -51,10 +75,17 @@ class Detector:
         self.__X, self.__Y = __X, __Y
 
     def display_grid(self):
+        """Display detector coordinate grid (2d)
+        """
         plt.plot(self.__X, self.__Y, marker='.', color='k', linestyle='none')
         plt.show()
 
     def display_dist(self, wireframe=False):
+        """Display a plot of the detector distribution of counts (3d)
+
+        Args:
+            wireframe (bool, optional): Display a wireframe on plot. Defaults to False.
+        """
         distrib = self.distribution_function
         fig = plt.figure()
         ax = fig.add_subplot(projection='3d')
@@ -83,6 +114,12 @@ class Detector:
         plt.show()
 
     def generate_random(self, low=0, high=10):
+        """Generate a random point for each detector grid point. Points fall from low-high
+
+        Args:
+            low (int, optional): Lowest possible rnd value. Defaults to 0.
+            high (int, optional): Highest possible rnd value. Defaults to 10.
+        """
         self.distribution_function = "Random"
         self.__random_low = low
         self.__random_high = high
@@ -95,6 +132,13 @@ class Detector:
         self.distribution = coordinates_from_axes(x, y, z)
 
     def generate_normal(self, mu=[0.0, 0.0], sigma=[3, 3], scale=1):
+        """Generates a normal distribution of counts on the detector.
+
+        Args:
+            mu (list, optional): Mean of the distribution. Defaults to [0.0, 0.0].
+            sigma (list, optional): Standard Deviation of the distribution. Defaults to [3, 3].
+            scale (int, optional): Scale multiplier. Defaults to 1.
+        """
         self.distribution_function = "Normal"
         self.__mu = mu
         self.__sigma = sigma
@@ -112,8 +156,11 @@ class Detector:
         z *= scale
         self.__Z = z
         self.distribution = coordinates_from_axes(x, y, z)
+# TODO: maybe add generate random from nomral (ie a random sample from a normally distributed rand. var)
 
     def print_properties(self):
+        """Generates a formatted output of detector properties.
+        """
         print(
             "Size: {size}cm\nArea: {area}cm²\nNum pts: {num_points}\nPt. spacing: ~{point_spacing:.3f}cm\nPt. Distrib: {point_distribution}".format(size=self.size, area=self.area, num_points=self.num_points, point_spacing=self.point_spacing, point_distribution=self.distribution_function))
 
