@@ -6,7 +6,7 @@ This is a Python program for simulating a detector, generating a grid of evenly 
 
 There is a simple GUI implemented that allows you to create multiple `Detector` objects and generate distributions for each one and then display each one. This is WIP and will be developed alongside the rest of the program.
 
-<img src="https://user-images.githubusercontent.com/34951139/230737402-1cb2fa56-6f69-4d3e-9602-115cbf015672.png" alt=“Program-GUI” width="300" height="310">
+<img src="https://user-images.githubusercontent.com/34951139/230737402-1cb2fa56-6f69-4d3e-9602-115cbf015672.png" alt=“Program-GUI”>
 
 ---
 
@@ -15,8 +15,6 @@ There is a simple GUI implemented that allows you to create multiple `Detector` 
 This program requires NumPy, SciPy, and Matplotlib to be installed. To install these dependencies using pip, run the following command:
 
 `pip install numpy scipy matplotlib`
-
----
 
 ## Usage
 
