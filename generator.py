@@ -57,6 +57,7 @@ class Detector:
         if (not is_square(num_points)):
             runtime_warn(
                 "numPoints not square; results rounded to square number")
+        self.name = ""
         self.per_side = int(num_points**.5)
         self.size = size
         self.area = size**2
@@ -90,7 +91,7 @@ class Detector:
         distrib = self.distribution_function
         fig = plt.figure()
         ax = fig.add_subplot(projection='3d')
-        plt.suptitle("Detector distribution")
+        plt.suptitle(f"Detector '{self.name}' distribution")
         ax.set_xlabel('x cm', fontsize=10)
         ax.set_ylabel('y cm', fontsize=10)
         ax.set_zlabel('Counts', fontsize=10)
