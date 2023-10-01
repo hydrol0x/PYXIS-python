@@ -91,7 +91,8 @@ class Detector:
         distrib = self.distribution_function
         fig = plt.figure()
         ax = fig.add_subplot(projection='3d')
-        plt.suptitle(f"Detector '{self.name}' distribution")
+        plt.suptitle(
+            f"Detector '{self.name}' distribution ({self.distribution_function})")
         ax.set_xlabel('x cm', fontsize=10)
         ax.set_ylabel('y cm', fontsize=10)
         ax.set_zlabel('Counts', fontsize=10)
