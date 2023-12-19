@@ -1,3 +1,6 @@
+# So that generated root files not added
+*.root
+
 distribution.txt
 distribution.csv
 normal_distribution.csv
