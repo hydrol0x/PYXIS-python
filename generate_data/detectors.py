@@ -26,12 +26,25 @@ class Detector(ABC):
     def generate(self):
         pass
 
-def generate_root_file(detector: Detector, file_path: str = ""):
+def generate_root_file(detector, file_path=""):
+    # Set default file path if not provided
     if not file_path:
         file_path = f"{detector.file_name()}.root"
+
+    def write_data(file, data, path=""):
+        # Iterate through the dictionary
+        for key, value in data.items():
+            current_path = f"{path}/{key}" if path else key
+            if isinstance(value, dict):
+                # If the value is a dictionary, recurse
+                write_data(file, value, current_path)
+            else:
+                # Otherwise, write the data to the file
+                file[current_path] = value
+
     with uproot.recreate(file_path) as file:
-        for bar_id in detector.bar_data:
-            file[f"DetectorData/{bar_id}"] = detector.bar_data[bar_id]
+        write_data(file, detector.bar_data)
+
 
 # TODO: use somewhat believable heuristic or gaussian to generate the energy and time data
 class PYXIS(Detector):
@@ -40,7 +53,7 @@ class PYXIS(Detector):
         self.num_rows = num_rows
         self.num_cols = num_cols
         self.num_events = num_events # number of randomly generated detections, i.e number of counts on histogram
-        self._dtype = np.dtype([('energy', 'float32'), ('time_left', 'float32'), ('time_right', 'float32')]) # pyxis data for each unit (bar), energy of detection & time it was detected on left and right PMT
+        self._dtype = np.dtype([('Energy', 'float32'), ('Time', 'float32')]) # pyxis data for each unit (bar), energy of detection & time it was detected on left and right PMT
         self._bar_data = {} # dictionary of above data, holds data for each unit (i.e bar) which is then represented in separate ROOT tree branches
 
         # Parameters for normal/gaussian distributions
@@ -104,10 +117,11 @@ class PYXIS(Detector):
         for i in range(self.num_rows):
             for j in range(self.num_cols):
                 bar_id = f"bar_{i}_{j}"
-                self._bar_data[bar_id] = np.zeros(self.num_events, dtype=self._dtype)     
+                self._bar_data[bar_id] = {} # dictionary containing data for each side of the bar
+                for i in range(2): # left and right -- 0 and 1
+                    self._bar_data[bar_id][i] = np.zeros(self.num_events, dtype=self._dtype)     
     
     def file_name(self):
-        # TODO: when more distributions add that in file name
         return f"PYXIS-{self.dist_type.name}-{self.name}-{self.num_rows}x{self.num_cols}"
 
     def _fill_random(self):
@@ -116,9 +130,9 @@ class PYXIS(Detector):
                 for j in range(self.num_cols):
                     bar_id = f"bar_{i}_{j}"
                     # TODO: add range specifier for uniform rnd
-                    self._bar_data[bar_id][event]['energy'] = np.random.uniform(0, 10)
-                    self._bar_data[bar_id][event]['time_left'] = np.random.uniform(0, 100)
-                    self._bar_data[bar_id][event]['time_right'] = np.random.uniform(0, 100)
+                    for i in range(2):
+                        self._bar_data[bar_id][i][event]['Energy'] = np.random.uniform(0, 10)
+                        self._bar_data[bar_id][i][event]['Time'] = np.random.uniform(0, 100)
     
     def _fill_gaussian(self):
         print("filling gaussian")
@@ -127,15 +141,17 @@ class PYXIS(Detector):
             for i in range(self.num_rows):
                 for j in range(self.num_cols):
                     bar_id = f"bar_{i}_{j}"
-                    self._bar_data[bar_id][event]['energy'] = np.random.normal(mu_1, sigma_1)
-                    self._bar_data[bar_id][event]['time_left'] = np.random.normal(mu_2, sigma_2)
-                    self._bar_data[bar_id][event]['time_right'] = np.random.normal(mu_3, sigma_3)
+                    for i in range(2): 
+                        # NOTE: this for loop is not really necessary... honestly if we know its range(2) for 0 and 1 i should prob. just make it all one step i was just lazy
+                        self._bar_data[bar_id][i][event]['Energy'] = np.random.normal(mu_1, sigma_1)
+                        self._bar_data[bar_id][i][event]['Time'] = np.random.normal(mu_3, sigma_3)
 
 if __name__ == "__main__":
     print("\n\n==== Debug/Dev ====\n\n")
 
-    pyxis =PYXIS("test", 10, 10, 1000)
+    pyxis =PYXIS("test", 10, 10, 1_000)
     pyxis.gaussian_param['sigma_energy'] = 5.0 # example of setting parameters
     pyxis.generate(Dist.GAUSSIAN)
+    pyxis.generate(Dist.RANDOM)
     # pyxis.generate(Dist.RANDOM)
     generate_root_file(pyxis)
