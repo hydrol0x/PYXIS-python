@@ -49,6 +49,13 @@ def generate_root_file(detector, file_path=""):
 # TODO: use somewhat believable heuristic or gaussian to generate the energy and time data
 class PYXIS(Detector):
     def __init__(self, name: str, num_rows: int, num_cols: int, num_events: int):
+        if num_rows<0:
+            raise ValueError("`num_rows` must be greater than 0")
+        if num_cols<0:
+            raise ValueError("`num_cols` must be greater than 0")
+        if num_events<0:
+            raise ValueError("`num_events` must be greater than 0")
+
         self.name = name
         self.num_rows = num_rows
         self.num_cols = num_cols
@@ -98,7 +105,7 @@ class PYXIS(Detector):
                 print("generating gaussian")
                 self._generate_gaussian()
             case _:
-                print("ERROR: not a valid distribution type")
+                raise ValueError(f"`{type}` is not a valid distribution type.")
     
     def _generate_gaussian(self):
         self._init_bar_data()
@@ -145,6 +152,8 @@ class PYXIS(Detector):
                         # NOTE: this for loop is not really necessary... honestly if we know its range(2) for 0 and 1 i should prob. just make it all one step i was just lazy
                         self._bar_data[bar_id][i][event]['Energy'] = np.random.normal(mu_1, sigma_1)
                         self._bar_data[bar_id][i][event]['Time'] = np.random.normal(mu_3, sigma_3)
+    
+    
 
 if __name__ == "__main__":
     print("\n\n==== Debug/Dev ====\n\n")
