@@ -1,4 +1,4 @@
-# PING (PYXIS) Analyzer
+# PING Analyzer
 
 ## Plan
 
