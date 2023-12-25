@@ -269,9 +269,27 @@ class RUTHERFORD(Detector):
 
         self.angulardist_param = {
         }
-    
 
-        
+    #generate data 
+    def generate(self, type:Dist):
+        """
+        Depending on specified distribution type, will generate mock bar data that matches that distribution.
+        This can then be used to generate a ROOT file w/ data
+        """
+        # TODO: in future will be multiple dist for generate, prob through multiple methods i.e generate_random()
+        self.dist_type = type
+
+        # TODO: make loop to fill every bar in here to not keep rewriting it
+        match type:
+            case Dist.ANGULARDISTRIBUTION:
+                print("generating angular distribution")
+                self._generate_angulardist()
+            case _:
+                raise ValueError(f"`{type}` is not a valid distribution type.")
+    
+    def _generate_angulardist(self):
+        #for angular distribution data, need to use a fitted guasian (https://www.mit.edu/~ehjin/files/rutherford.pdf)
+        pass
 
 if __name__ == "__main__":
 
