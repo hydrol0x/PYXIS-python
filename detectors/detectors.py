@@ -258,6 +258,19 @@ class PYXIS(Detector):
 
     #     # Show the plot
     #     plt.show() 
+                
+class RUTHERFORD(Detector):
+    def __init__(self, name: str, num_events: int):
+        if num_events<0:
+            raise ValueError("`num_events` must be greater than 0")
+
+        self.name = name
+        self.num_events = num_events # number of randomly generated detections, i.e number of counts on histogram
+
+        self.angulardist_param = {
+        }
+    
+
         
 
 if __name__ == "__main__":
